@@ -4,14 +4,14 @@ close all;
 ko=im2double(imread('colorimg.jpeg')); % convert int double
 
 ko = imresize(ko,[256,256]);
-im = imnoise(ko,'gaussian',.05);
+im = imnoise(ko,'poisson');
 
 %{
 p = .1; % p between 0 and 1
 im = (ko + p*rand(size(ko)))/(1+p);
 %}
 
-
+figure(1)
 subplot(3,3,1);
 imshow(im);
 title('original image');
@@ -43,6 +43,7 @@ subplot(3,3,5);
 imshow(log(abs(D)), []);
 title('Butterworth Low Pass Filter(Frequency Domain)');
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 filteredImage = real(ifft2(ifftshift(B)));
 subplot(3,3,6);
@@ -60,6 +61,7 @@ subplot(3,3,8);
 imshow(real(BfilteredImage), []);
 title('Output: Butterworth Low Pass Filter');
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 err = immse(real(filteredImage), ko);
 fprintf('\n The mean-squared error is of ideal filtered image %0.4f\n', err);
@@ -71,6 +73,48 @@ err = immse(real(BfilteredImage), ko);
 fprintf('\n The mean-squared error of Butterworth filter treated image is %0.4f\n', err);
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%The more different less will be the SSIM
+
+err = ssim(real(filteredImage), ko);
+fprintf('\n The Structural similarity (SSIM) index of ideal filtered image %0.4f\n', err);
+[ssimval,ssimmap] = ssim(real(filteredImage), ko);
+figure(2)
+subplot(1,3,1);
+imshow(ssimmap,[])
+title(['Local SSIM Map with Global SSIM Value: ',num2str(ssimval)])
+
+err = ssim(real(GfilteredImage), ko);
+fprintf('\n The Structural similarity (SSIM) index of Gaussian filtered image is %0.4f\n', err);
+[ssimval,ssimmap] = ssim(real(GfilteredImage), ko);
+subplot(1,3,2);
+imshow(ssimmap,[])
+title(['Local SSIM Map with Global SSIM Value: ',num2str(ssimval)])
+
+err = ssim(real(BfilteredImage), ko);
+fprintf('\n Structural similarity (SSIM) index of Butterworth filter treated image is %0.4f\n', err);
+[ssimval,ssimmap] = ssim(real(BfilteredImage), ko);
+subplot(1,3,3);
+imshow(ssimmap,[])
+title(['Local SSIM Map with Global SSIM Value: ',num2str(ssimval)])
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The higher the PSNR, the better the quality of the compressed, or reconstructed image.
+
+[peaksnr, snr] = psnr(filteredImage, ko);
+fprintf('\n The Peak-SNR value of ideal filteredImage is %0.4f',peaksnr);
+fprintf('\n\n The SNR value of ideal filteredImage is %0.4f \n\n', snr);
+
+[peaksnr, snr] = psnr(GfilteredImage, ko);
+fprintf('\n The Peak-SNR value of Gaussian filteredImage is %0.4f',peaksnr);
+fprintf('\n\n The SNR value of Gaussian filteredImage is %0.4f \n\n', snr);
+
+[peaksnr, snr] = psnr(BfilteredImage, ko);
+fprintf('\n The Peak-SNR value of Butterworth filteredImage is %0.4f',peaksnr);
+fprintf('\n\n The SNR value of Butterworth filteredImage is %0.4f \n\n', snr);
+
 
 function B = idealLPFilter(L,rows,columns)
     window = 100;
@@ -78,7 +122,8 @@ function B = idealLPFilter(L,rows,columns)
     B(1:end, 1:window) = 0;%top left
     B(1:window,1:end) = 0;
     B(1:end, end-window:end) = 0; %top right
-    B(end-window:end, 1:end) = 0;%down right
+    B(end-window:end, 1:end) = 0;%bottom right
+    
 end
 
 function C = gaussianLPFilter(L,rows,columns)
@@ -104,4 +149,5 @@ function D = butterworthLPFilter(L,rows,columns)
     size(hhp)
     D=L.*hhp;
 end
+
 
