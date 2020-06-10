@@ -3,8 +3,6 @@ clear;
 close all;
 im=im2double(imread('cameraman.tif'));
 
-
-
 subplot(3,3,1);
 imshow(im);
 title('original image');
