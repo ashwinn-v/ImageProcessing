@@ -1,16 +1,17 @@
 clc;
 clear;
 close all;
-ko=im2double(imread('colorimg.jpeg')); % convert int double
+ko=im2double(imread('lennacol.png')); % convert int double
 
 ko = imresize(ko,[256,256]);
-im = imnoise(ko,'poisson');
+im = imnoise(ko,'salt & pepper');
 
 %{
 p = .1; % p between 0 and 1
 im = (ko + p*rand(size(ko)))/(1+p);
 %}
 
+%% 
 figure(1)
 subplot(3,3,1);
 imshow(im);
@@ -24,11 +25,16 @@ imshow(real(log(Y)), []);
 title('In Frequency Domain');
 
 [rows, columns, ~] = size(Y)
+%[rows, columns] = size(Y)
 L=Y;
+%%
+ % Applying the kernels on the image.
+
+%% 
 B=idealLPFilter(L,rows,columns);
 C=gaussianLPFilter(L,rows,columns);
 D=butterworthLPFilter(L,rows,columns);
-
+%% 
 
 subplot(3,3,3);
 imshow(real(log(B)), [])
@@ -42,9 +48,10 @@ title('Gaussian Low Pass Filter(Frequency Domain)');
 subplot(3,3,5);
 imshow(log(abs(D)), []);
 title('Butterworth Low Pass Filter(Frequency Domain)');
+%% 
+% Applying inverse fft on the filtered images
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%
 filteredImage = real(ifft2(ifftshift(B)));
 subplot(3,3,6);
 imshow(real(filteredImage), []);
@@ -60,9 +67,10 @@ BfilteredImage = real(ifft2(ifftshift(D)));
 subplot(3,3,8);
 imshow(real(BfilteredImage), []);
 title('Output: Butterworth Low Pass Filter');
+%% 
+% Greater the accuracy less will be the mean-squared error
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%% 
 err = immse(real(filteredImage), ko);
 fprintf('\n The mean-squared error is of ideal filtered image %0.4f\n', err);
 
@@ -71,12 +79,10 @@ fprintf('\n The mean-squared error is Gaussian filtered image is %0.4f\n', err);
 
 err = immse(real(BfilteredImage), ko);
 fprintf('\n The mean-squared error of Butterworth filter treated image is %0.4f\n', err);
+%% 
+% The more different less will be the SSIM
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%The more different less will be the SSIM
-
+%% 
 err = ssim(real(filteredImage), ko);
 fprintf('\n The Structural similarity (SSIM) index of ideal filtered image %0.4f\n', err);
 [ssimval,ssimmap] = ssim(real(filteredImage), ko);
@@ -98,11 +104,10 @@ fprintf('\n Structural similarity (SSIM) index of Butterworth filter treated ima
 subplot(1,3,3);
 imshow(ssimmap,[])
 title(['Local SSIM Map with Global SSIM Value: ',num2str(ssimval)])
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%% 
 % The higher the PSNR, the better the quality of the compressed, or reconstructed image.
 
+%% 
 [peaksnr, snr] = psnr(filteredImage, ko);
 fprintf('\n The Peak-SNR value of ideal filteredImage is %0.4f',peaksnr);
 fprintf('\n\n The SNR value of ideal filteredImage is %0.4f \n\n', snr);
@@ -114,8 +119,50 @@ fprintf('\n\n The SNR value of Gaussian filteredImage is %0.4f \n\n', snr);
 [peaksnr, snr] = psnr(BfilteredImage, ko);
 fprintf('\n The Peak-SNR value of Butterworth filteredImage is %0.4f',peaksnr);
 fprintf('\n\n The SNR value of Butterworth filteredImage is %0.4f \n\n', snr);
+%%
+% Analysis using edge detection
+
+%%
+ko1 = rgb2gray(ko);
+O1 = edge(ko1,'sobel');
+O2 = edge(ko1,'canny');
+figure(3);
+subplot(3,2,1);
+imshow(O1);
+title('edges on original image using sobel');
+subplot(3,2,2);
+imshow(O2);
+title('edges on original image using canny');
+
+im2 = rgb2gray(im);
+O1 = edge(im2,'sobel');
+O2 = edge(im2,'canny');
+figure(3);
+subplot(3,2,3);
+imshow(O1);
+title('edges on noisy image using sobel');
+subplot(3,2,4);
+imshow(O2);
+title('edges on noisy image using canny');
+
+FIM = rgb2gray(real(BfilteredImage));
+O1 = edge(im2,'sobel');
+O2 = edge(im2,'canny');
+figure(3);
+subplot(3,2,5);
+imshow(O1);
+title('edges on filtered image using sobel');
+subplot(3,2,6);
+imshow(O2);
+title('edges on filtered image using canny');
 
 
+
+
+%% 
+% Fuction definition of the filters
+
+%% 
 function B = idealLPFilter(L,rows,columns)
     window = 100;
     B=L;
@@ -149,5 +196,8 @@ function D = butterworthLPFilter(L,rows,columns)
     size(hhp)
     D=L.*hhp;
 end
+%% 
+
+
 
 
