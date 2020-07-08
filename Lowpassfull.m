@@ -4,7 +4,7 @@ close all;
 ko=im2double(imread('lennacol.png')); % convert int double
 
 ko = imresize(ko,[256,256]);
-im = imnoise(ko,'salt & pepper');
+im = imnoise(ko,'Gaussian');
 
 %{
 p = .1; % p between 0 and 1
@@ -145,7 +145,7 @@ subplot(3,2,4);
 imshow(O2);
 title('edges on noisy image using canny');
 
-FIM = rgb2gray(real(BfilteredImage));
+FIM = rgb2gray(real(GfilteredImage));
 O1 = edge(im2,'sobel');
 O2 = edge(im2,'canny');
 figure(3);
@@ -167,7 +167,7 @@ function B = idealLPFilter(L,rows,columns)
     window = 100;
     B=L;
     B(1:end, 1:window) = 0;%top left
-    B(1:window,1:end) = 0;
+    B(1:window,1:end) = 0; %bottom left
     B(1:end, end-window:end) = 0; %top right
     B(end-window:end, 1:end) = 0;%bottom right
     
