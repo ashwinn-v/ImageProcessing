@@ -11,12 +11,15 @@ In two dimensions [1], the DFT takes a matrix as input, and returns another matr
 
 The definition of the two-dimensional discrete Fourier transform strikes a resemblance to that for one dimension.
 The forward and inverse transforms for an matrix, where for notational convenience we assume that the x indices are from 0 to M-1 and the y indices are from 0 to N-1, are:
+<p align="center">
 <img width="342" alt="Screenshot 2021-05-06 at 2 28 59 AM" src="https://user-images.githubusercontent.com/52974732/117208497-d1f3eb00-ae12-11eb-9b74-5c3ab18b2a93.png">
+
 
 ###  TWO DIMENSIONAL DISCRETE FOURIER TRANSFORMS
 
+<p align="center">
 <img width="270" alt="Screenshot 2021-05-06 at 2 27 58 AM" src="https://user-images.githubusercontent.com/52974732/117208372-ae30a500-ae12-11eb-96de-b159fcebb333.png">
-
+ </p>
 
 
 
