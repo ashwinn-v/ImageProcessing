@@ -41,5 +41,5 @@ iii.Take the inverse Fourier transform of the image to get the resulting enhance
 <img width="393" alt="Screenshot 2021-05-10 at 2 03 34 PM" src="https://user-images.githubusercontent.com/52974732/117630155-88036000-b198-11eb-8b7f-d93b128a66fc.png">
 </p>
 
-The following code can be use for image noise reduction and edge filtering using fft function in matlab.
+The following code can be used for image noise reduction and edge filtering using fft function in matlab.
 Noise reduction can be done using a low pass filter and edge detection can be done using a high pass filter.
