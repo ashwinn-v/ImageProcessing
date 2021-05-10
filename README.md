@@ -1,5 +1,7 @@
 # Image Enhancement using Fourier transforms
 
+[![](https://img.shields.io/badge/MATLAB-Ver.2019-red)](https://www.mathworks.com/products/matlab.html)
+
 Images are used in various fields to help monitoring processes such as images in fingerprint evaluation, satellite monitoring, medical diagnostics, underwater areas, etc. Image processing techniques is adopted as an optimised method to help the processing tasks efficiently. Fourier transform is one such important image processing method that can transform the image from spatial domain to frequency domain. In this paper, we apply a number of frequency domain filters for reducing the noise as well as to detect the edges. The quality of reconstructed image is analysed by calculating different parameters like mean squared error and peak signal noise ratio. The results are tabulated, and the best filter for a particular application is thereby determined.
 
 
